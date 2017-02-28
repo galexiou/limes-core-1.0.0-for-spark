@@ -15,179 +15,164 @@ import org.aksw.limes.core.io.config.reader.xml.XMLConfigurationReader;
 
 /**
  * Contains the information necessary to access a knowledge base
- *
- * @author ngonga
- * @author Mohamed Sherif <sherif@informatik.uni-leipzig.de>
- * @version Nov 12, 2015
+ * 
+ * @author Mohamed Sherif (sherif@informatik.uni-leipzig.de)
+ * @version Jul 12, 2016
  */
-public class KBInfo implements Serializable{
+public class KBInfo implements Serializable {
 
-	private static final long serialVersionUID = 7915400434442160847L;
-	protected String id;
+    private static final String DEFAULT_QUERY_TYPE = "sparql";
+
+    private static final long serialVersionUID = 7915400434442160847L;
+
+    protected String id;
     protected String endpoint;
     protected String graph;
     protected String var;
     protected List<String> properties;
     protected List<String> optionalProperties;
     protected ArrayList<String> restrictions;
-    protected HashMap<String, Map<String, String>> functions;
+    protected Map<String, Map<String, String>> functions;
     protected Map<String, String> prefixes;
     protected int pageSize;
-    protected String type; 
+    protected String type;
 
-	/**
+    /**
      * Constructor
      */
     public KBInfo() {
         id = null;
         endpoint = null;
         graph = null;
-        restrictions = new ArrayList<String>();
-        properties = new ArrayList<String>();
-        optionalProperties = new ArrayList<String>();
-        prefixes = new HashMap<String, String>();
-        functions = new HashMap<String, Map<String, String>>();
-        //-1 means query all at once
-        pageSize = -1;
-        type = "sparql"; //default value
+        restrictions = new ArrayList<>();
+        properties = new ArrayList<>();
+        optionalProperties = new ArrayList<>();
+        prefixes = new HashMap<>();
+        functions = new HashMap<>();
+
+        pageSize = -1;      //-1 means query all at once
+        type = DEFAULT_QUERY_TYPE;    //default value
     }
-    
-    public String getId() {
-		return id;
-	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public String getEndpoint() {
-		return endpoint;
-	}
-
-	public void setEndpoint(String endpoint) {
-		this.endpoint = endpoint;
-	}
-
-	public String getGraph() {
-		return graph;
-	}
-
-	public void setGraph(String graph) {
-		this.graph = graph;
-	}
-
-	public String getVar() {
-		return var;
-	}
-
-	public void setVar(String var) {
-		this.var = var;
-	}
-
-	public List<String> getProperties() {
-		return properties;
-	}
-	
-	public List<String> getOptionalProperties() {
-		return optionalProperties;
-	}
-
-	public void setProperties(List<String> properties) {
-		this.properties = properties;
-	}
-	
-	public void setOptionalProperties(List<String> optionalProperties) {
-		this.optionalProperties = optionalProperties;
-	}
-
-	public ArrayList<String> getRestrictions() {
-		return restrictions;
-	}
-
-	public void setRestrictions(ArrayList<String> restrictions) {
-		this.restrictions = restrictions;
-	}
-	
-	public void addRestriction(String restriction) {
-		this.restrictions.add(restriction);
-	}
-
-	public HashMap<String, Map<String, String>> getFunctions() {
-		return functions;
-	}
-
-	public void setFunctions(HashMap<String, Map<String, String>> functions) {
-		this.functions = functions;
-	}
-
-	public Map<String, String> getPrefixes() {
-		return prefixes;
-	}
-
-	public void setPrefixes(HashMap<String, String> prefixes) {
-		this.prefixes = prefixes;
-	}
-
-	public int getPageSize() {
-		return pageSize;
-	}
-
-	public void setPageSize(int pageSize) {
-		this.pageSize = pageSize;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-
-    
     /**
-     * @param var
-     *@author sherif
+     * @param var variable name
      */
     public KBInfo(String var) {
         this();
         this.var = var;
     }
 
-    /**
-	 * @param id
-	 * @param endpoint
-	 * @param graph
-	 * @param var
-	 * @param properties
-	 * @param restrictions
-	 * @param functions
-	 * @param prefixes
-	 * @param pageSize
-	 * @param type
-	 *@author sherif
-	 */
-	public KBInfo(String id, String endpoint, String graph, String var,
-			List<String> properties, List<String> optionalProperties,
-			ArrayList<String> restrictions,	HashMap<String, Map<String, String>> functions,
-			HashMap<String, String> prefixes, int pageSize, String type) {
-		super();
-		this.id = id;
-		this.endpoint = endpoint;
-		this.graph = graph;
-		this.var = var;
-		this.properties = properties;
-		this.optionalProperties = optionalProperties;
-		this.restrictions = restrictions;
-		this.functions = functions;
-		this.prefixes = prefixes;
-		this.pageSize = pageSize;
-		this.type = type;
-	}
+    public KBInfo(String id, String endpoint, String graph, String var,
+            List<String> properties, List<String> optionalProperties,
+            ArrayList<String> restrictions, Map<String, Map<String, String>> functions,
+            Map<String, String> prefixes, int pageSize, String type) {
+        super();
+        this.id = id;
+        this.endpoint = endpoint;
+        this.graph = graph;
+        this.var = var;
+        this.properties = properties;
+        this.optionalProperties = optionalProperties;
+        this.restrictions = restrictions;
+        this.functions = functions;
+        this.prefixes = prefixes;
+        this.pageSize = pageSize;
+        this.type = type;
+    }
 
-	/**
-     *
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getEndpoint() {
+        return endpoint;
+    }
+
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
+    }
+
+    public String getGraph() {
+        return graph;
+    }
+
+    public void setGraph(String graph) {
+        this.graph = graph;
+    }
+
+    public String getVar() {
+        return var;
+    }
+
+    public void setVar(String var) {
+        this.var = var;
+    }
+
+    public List<String> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(List<String> properties) {
+        this.properties = properties;
+    }
+
+    public List<String> getOptionalProperties() {
+        return optionalProperties;
+    }
+
+    public void setOptionalProperties(List<String> optionalProperties) {
+        this.optionalProperties = optionalProperties;
+    }
+
+    public ArrayList<String> getRestrictions() {
+        return restrictions;
+    }
+
+    public void setRestrictions(ArrayList<String> restrictions) {
+        this.restrictions = restrictions;
+    }
+
+    public void addRestriction(String restriction) {
+        this.restrictions.add(restriction);
+    }
+
+    public Map<String, Map<String, String>> getFunctions() {
+        return functions;
+    }
+
+    public void setFunctions(Map<String, Map<String, String>> functions) {
+        this.functions = functions;
+    }
+
+    public Map<String, String> getPrefixes() {
+        return prefixes;
+    }
+
+    public void setPrefixes(Map<String, String> prefixes) {
+        this.prefixes = prefixes;
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    /**
      * @return String representation of knowledge base info
      */
     @Override
@@ -299,7 +284,8 @@ public class KBInfo implements Serializable{
         return true;
     }
 
-    /** Returns the class contained in the restriction
+    /**
+     * Returns the class contained in the restriction
      *
      * @return Class label
      */
@@ -313,29 +299,32 @@ public class KBInfo implements Serializable{
         return null;
     }
 
-      /** Returns the class contained in the restriction
+    /**
+     * Returns the class contained in the restriction
      *
+     * @param expanded is expanded
      * @return Class label
      */
     public String getClassOfendpoint(boolean expanded) {
         for (String rest : restrictions) {
             if (rest.matches(".* rdf:type .*")) {
                 String result = rest.substring(rest.indexOf("rdf:type") + 8).replaceAll("<", "").replaceAll(">", "").trim();
-                if(!expanded) return result;
-                else{
+                if (!expanded) return result;
+                else {
                     String namespace = result.substring(0, result.indexOf(":"));
-                    if(prefixes.containsKey(namespace))
-                        return prefixes.get(namespace)+result.substring(result.indexOf(":")+1);
+                    if (prefixes.containsKey(namespace))
+                        return prefixes.get(namespace) + result.substring(result.indexOf(":") + 1);
                     else return result;
                 }
             }
         }
         return null;
     }
+
     /**
      * Returns class URI if restriction to a rdf:type exists
      *
-     * @return
+     * @return class restriction string
      */
     public String getClassRestriction() {
         String ret = null;
@@ -362,7 +351,7 @@ public class KBInfo implements Serializable{
         List<String> copy = new ArrayList<String>(properties);
         properties.clear();
 
-        for(String property : copy) {
+        for (String property : copy) {
             XMLConfigurationReader.processProperty(this, property);
         }
     }

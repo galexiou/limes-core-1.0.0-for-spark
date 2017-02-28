@@ -9,14 +9,13 @@ limes:linkedgeodataTOlinkedgeodataTarget
       rdfs:label "linkedgeodata" ;
       limes:endPoint "http://linkedgeodata.org/sparql" ;
       limes:pageSize "2000" ;
-      limes:property "geom:geometry/geos:asWKT" ;
+      limes:property "geom:geometry/geos:asWKT RENAME polygon" ;
       limes:restriction "?y a lgdo:RelayBox" ;
       limes:variable "?y" .
 
 limes:linkedgeodataTOlinkedgeodata
       a       limes:LimesSpecs ;
-      limes:examplars "-1" ;
-      limes:executionPlan "Simple" ;
+      limes:hasExecutionParameters limes:executionParameters ;
       limes:granularity "2" ;
       limes:hasAcceptance limes:linkedgeodataTOlinkedgeodataAcceptance ;
       limes:hasMetric limes:linkedgeodataTOlinkedgeodataMetric ;
@@ -24,7 +23,14 @@ limes:linkedgeodataTOlinkedgeodata
       limes:hasSource limes:linkedgeodataTOlinkedgeodataSource ;
       limes:hasTarget limes:linkedgeodataTOlinkedgeodataTarget ;
       limes:outputFormat "TAB" .
-
+      
+limes:executionParameters
+	  a limes:ExecutionParameters ;
+	  limes:executionPlanner "default" ;
+	  limes:executionRewriter "default" ;
+	  limes:executionEngine "default" .
+	  
+      
 limes:linkedgeodataTOlinkedgeodataReview
       a       limes:Review ;
       limes:file "lgd_relaybox_near.nt" ;
@@ -33,7 +39,7 @@ limes:linkedgeodataTOlinkedgeodataReview
 
 limes:linkedgeodataTOlinkedgeodataMetric
       a       limes:Metric ;
-      limes:expression "hausdorff(x.polygon, y.polygon)" .
+      limes:expression "geo_hausdorff(x.polygon, y.polygon)" .
 
 limes:linkedgeodataTOlinkedgeodataAcceptance
       a       limes:Acceptance ;
@@ -46,6 +52,6 @@ limes:linkedgeodataTOlinkedgeodataSource
       rdfs:label "linkedgeodata" ;
       limes:endPoint "http://linkedgeodata.org/sparql" ;
       limes:pageSize "2000" ;
-      limes:property "geom:geometry/geos:asWKT" ;
+      limes:property "geom:geometry/geos:asWKT RENAME polygon" ;
       limes:restriction "?x a lgdo:RelayBox" ;
       limes:variable "?x" .

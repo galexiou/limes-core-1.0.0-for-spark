@@ -1,33 +1,97 @@
 package org.aksw.limes.core.execution.planning.planner;
 
+import org.aksw.limes.core.io.cache.ACache;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import org.aksw.limes.core.io.cache.Cache;
-import org.apache.log4j.Logger;
-
+/**
+ * Implements the planner factory class. The planner factory class is
+ * responsible for choosing and creating the corresponding planner object.
+ *
+ * @author Kleanthi Georgala (georgala@informatik.uni-leipzig.de)
+ * @version 1.0
+ */
 public class ExecutionPlannerFactory {
-    public static final String DEFAULT = "Default";//"canonical";
-    public static final String HELIOS = "helios";
-    public static final String DYNAMIC = "dynamic";
-    private static final Logger logger = Logger.getLogger(ExecutionPlannerFactory.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(ExecutionPlannerFactory.class);
 
     /**
-     * @param name,
-     *            type of the Execution Planner
-     * @return a specific execution engine instance
-     * @author kleanthi
+     * Enum class of allowed planner types.
      */
-    public static IPlanner getPlanner(String name, Cache source, Cache target) {
-
-    //logger.info("planner name = "+name);
-	if (name.equalsIgnoreCase(DEFAULT))
-	    return new CanonicalPlanner();
-	if (name.equalsIgnoreCase(HELIOS))
-	    return new HeliosPlanner(target, target);
-	//if (name.equalsIgnoreCase(DYNAMIC))
-	//   return new DynamicPlanner(source, target);
-
-	logger.error("Sorry, " + name + " is not yet implemented. Exit with error ...");
-	System.exit(1);
-	return null;
+    public enum ExecutionPlannerType {
+        DEFAULT, CANONICAL, HELIOS, DYNAMIC;
     }
+
+    /**
+     * Planner factory field for default planner.
+     */
+    public static final String DEFAULT = "default";
+    /**
+     * Planner factory field for canonical planner.
+     */
+    public static final String CANONICAL = "canonical";
+    /**
+     * Planner factory field for helios planner.
+     */
+    public static final String HELIOS = "helios";
+    /**
+     * Planner factory field for dynamic planner.
+     */
+    public static final String DYNAMIC = "dynamic";
+
+    /**
+     * Factory function for retrieving a planner name from the set of allowed
+     * types.
+     * 
+     * @param name
+     *            The name/type of the planner.
+     * @return a specific planner type
+     */
+    public static ExecutionPlannerType getExecutionPlannerType(String name) {
+        if (name.equalsIgnoreCase(DEFAULT)) {
+            return ExecutionPlannerType.DEFAULT;
+        }
+        if (name.equalsIgnoreCase(CANONICAL)) {
+            return ExecutionPlannerType.CANONICAL;
+        }
+        if (name.equalsIgnoreCase(DYNAMIC)) {
+            return ExecutionPlannerType.DYNAMIC;
+        }
+        if (name.equalsIgnoreCase(HELIOS)) {
+            return ExecutionPlannerType.HELIOS;
+        }
+        logger.warn("Sorry, " + name + " is not yet implemented. Returning the default planner type instead...");
+        return ExecutionPlannerType.HELIOS;
+    }
+
+    /**
+     * Factory function for retrieving the desired planner instance.
+     * 
+     * @param type
+     *            Type of the Planner
+     * @param source
+     *            Source cache
+     * @param target
+     *            Target cache
+     * 
+     * @return a specific planner instance
+     * 
+     */
+    public static Planner getPlanner(ExecutionPlannerType type, ACache source, ACache target) {
+
+        switch (type) {
+        case DEFAULT:
+            return new CanonicalPlanner();
+        case CANONICAL:
+            return new CanonicalPlanner();
+        case HELIOS:
+            return new HeliosPlanner(source, target);
+        case DYNAMIC:
+            return new DynamicPlanner(source, target);
+        default:
+            logger.warn(
+                    "Sorry, " + type.toString() + " is not yet implemented. Returning the default planner instead...");
+            return new CanonicalPlanner();
+        }
+    }
+
 }

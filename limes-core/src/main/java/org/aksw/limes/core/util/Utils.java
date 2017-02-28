@@ -1,34 +1,31 @@
 package org.aksw.limes.core.util;
 
+import java.util.HashMap;
+import java.util.List;
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
 
-import java.util.HashMap;
-import java.util.List;
-
-import org.aksw.limes.core.io.mapping.Mapping;
-import org.apache.log4j.Logger;
+import org.aksw.limes.core.io.mapping.AMapping;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
- *
- * @author ngonga
+ * Computes the precision of the mapping computed with respect to the
+ * mapping reference.
+ * 
+ * @author Axel-C. Ngonga Ngomo (ngonga@informatik.uni-leipzig.de)
+ * @author Mohamed Sherif (sherif@informatik.uni-leipzig.de)
+ * @version Jul 18, 2016
  */
 public class Utils {
 
-    /**
-     * Computes the precision of the mapping computed with respect to the
-     * mapping reference.
-     *
-     * @param reference
-     * @param computed
-     * @return Precision
-     */
-    static Logger logger = Logger.getLogger(Utils.class.getName());
+    static Logger logger = LoggerFactory.getLogger(Utils.class.getName());
 
-    public static double getPrecision(Mapping reference, Mapping computed) {
+    public static double getPrecision(AMapping reference, AMapping computed) {
         double size = (double) computed.size();
         double count = 0;
         for (String key : computed.getMap().keySet()) {
@@ -45,11 +42,11 @@ public class Utils {
      * Computes the recall of the mapping computed with respect to the mapping
      * reference.
      *
-     * @param reference
-     * @param computed
+     * @param reference Mapping
+     * @param computed Mapping
      * @return Recall
      */
-    public static double getRecall(Mapping reference, Mapping computed) {
+    public static double getRecall(AMapping reference, AMapping computed) {
         double size = (double) reference.size();
         double count = 0;
         for (String key : computed.getMap().keySet()) {
@@ -70,7 +67,7 @@ public class Utils {
      * @param computed
      * @return Recall
      */
-    public static double getFscore(Mapping reference, Mapping computed) {
+    public static double getFscore(AMapping reference, AMapping computed) {
         double sizeC = (double) computed.size();
         double sizeR = (double) reference.size();
         double count = 0;
@@ -90,12 +87,12 @@ public class Utils {
      * Computes all stats (i.e. precision, recall, f-score) of the mapping
      * computed with respect to the mapping reference.
      *
-     * @param reference
-     * @param computed
+     * @param reference Mapping
+     * @param computed Mapping
      * @return Precision, Recall and F-Score. The entries for the Hashmap are
      * "precision", "recall" and "fscore".
      */
-    public static HashMap<String, Double> getPRF(Mapping reference, Mapping computed) {
+    public static HashMap<String, Double> getPRF(AMapping reference, AMapping computed) {
         HashMap<String, Double> result = new HashMap<String, Double>();
         double sizeC = (double) computed.size();
         double sizeR = (double) reference.size();
@@ -124,15 +121,15 @@ public class Utils {
      * @return Split string
      */
     @SuppressWarnings("unused")
-	private static String splitAtCamelCase(String s) {
+    private static String splitAtCamelCase(String s) {
         String regex = "([a-z])([A-Z])";
         String replacement = "$1 $2";
         return s.replaceAll(regex, replacement).toLowerCase();
     }
 
     public static double getStandardDeviation(List<Double> data) {
-// sd is sqrt of sum of (values-mean) squared divided by n - 1 
-// Calculate the mean 
+        // sd is sqrt of sum of (values-mean) squared divided by n - 1 
+        // Calculate the mean 
         double mean = 0;
         final int n = data.size();
         if (n < 2) {
@@ -142,21 +139,20 @@ public class Utils {
             mean += data.get(i);
         }
         mean /= n;
-       // calculate the sum of squares 
+        // calculate the sum of squares
         double sum = 0;
         for (int i = 0; i < n; i++) {
             final double v = data.get(i) - mean;
             sum += v * v;
         }
-    // Change to ( n - 1 ) to n if you have complete data instead of a sample. 
+        // Change to ( n - 1 ) to n if you have complete data instead of a sample.
         return Math.sqrt(sum / (n - 1));
     }
-    
-    
+
 
     public static double getMean(List<Double> data) {
-// sd is sqrt of sum of (values-mean) squared divided by n - 1 
-// Calculate the mean 
+        // sd is sqrt of sum of (values-mean) squared divided by n - 1 
+        // Calculate the mean 
         double mean = 0;
         final int n = data.size();
         if (n < 2) {

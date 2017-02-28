@@ -1,41 +1,27 @@
 package org.aksw.limes.core.measures.measure.space;
 
-import org.aksw.limes.core.measures.measure.date.DayMeasure;
-import org.aksw.limes.core.measures.measure.date.SimpleDateMeasure;
-import org.aksw.limes.core.measures.measure.date.YearMeasure;
-import org.apache.log4j.Logger;
-
-
+import org.aksw.limes.core.measures.measure.pointsets.GeoOrthodromicMeasure;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
-*
-* @author ngonga
-*/
+ * @author Axel-C. Ngonga Ngomo (ngonga@informatik.uni-leipzig.de)
+ */
 public class SpaceMeasureFactory {
 
-   static Logger logger = Logger.getLogger("LIMES");
+    static Logger logger = LoggerFactory.getLogger(SpaceMeasureFactory.class);
 
-   public static ISpaceMeasure getMeasure(String name, int dimension) {
-//   	System.out.println("SpaceMesure.getMeasure("+name+")");
-   	if (name.toLowerCase().startsWith("geo")) {
-           if (dimension != 2) {
-               logger.warn("Erroneous dimension settings for GeoDistance (" + dimension + ").");
-           }
-           return new GeoDistance();
-       } else if (name.toLowerCase().startsWith("datesim")) {
-       	return new SimpleDateMeasure();
-       }
-       else if (name.toLowerCase().startsWith("daysim")) {
-       	return new DayMeasure();  
-       } 
-       else if (name.toLowerCase().startsWith("yearsim")) {
-       	return new  YearMeasure();
-       }
-       else {
-           EuclideanMetric measure = new EuclideanMetric();
-           measure.setDimension(dimension);
-           return measure;
-       }
-   }
+    public static ISpaceMeasure getMeasure(String name, int dimension) {
+        // System.out.println("SpaceMesure.getMeasure("+name+")");
+        if (name.toLowerCase().startsWith("geo")) {
+            if (dimension != 2) {
+                logger.warn("Erroneous dimension settings for GeoDistance (" + dimension + ").");
+            }
+            return new GeoOrthodromicMeasure();
+        } else {
+            EuclideanMeasure measure = new EuclideanMeasure();
+            measure.setDimension(dimension);
+            return measure;
+        }
+    }
 }
-

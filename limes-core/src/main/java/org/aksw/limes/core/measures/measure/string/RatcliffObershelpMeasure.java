@@ -1,11 +1,11 @@
 package org.aksw.limes.core.measures.measure.string;
 
+import java.util.LinkedList;
+
 import org.aksw.limes.core.io.cache.Instance;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
-import java.util.LinkedList;
-
-public class RatcliffObershelpMeasure extends StringMeasure implements TrieFilterableStringMeasure {
+public class RatcliffObershelpMeasure extends StringMeasure implements ITrieFilterableStringMeasure {
 
     /**
      * the current score will be stored here.
@@ -14,29 +14,30 @@ public class RatcliffObershelpMeasure extends StringMeasure implements TrieFilte
 
     @Override
     public double characterFrequencyUpperBound(int l1, int l2, int m) {
-        return (2*(double)m)/((double)l1+(double)l2);
+        return (2 * (double) m) / ((double) l1 + (double) l2);
     }
 
     @Override
     public int characterMatchLowerBound(int l1, int l2, double threshold) {
-        return (int) Math.round(Math.ceil(threshold*(double)(l1+l2)/2.0d));
+        return (int) Math.round(Math.ceil(threshold * (double) (l1 + l2) / 2.0d));
     }
 
     @Override
     public int lengthLowerBound(int l1, double threshold) {
-        return (int) Math.round(Math.ceil((threshold)/(2-threshold)*(double)l1));
+        return (int) Math.round(Math.ceil((threshold) / (2 - threshold) * (double) l1));
     }
 
     @Override
     public int lengthUpperBound(int l1, double threshold) {
-        return (int) Math.round(Math.floor((2-threshold)/(threshold)*(double)l1));
+        return (int) Math.round(Math.floor((2 - threshold) / (threshold) * (double) l1));
     }
 
     @Override
     public LinkedList<ImmutableTriple<Integer, Integer, Integer>> getPartitionBounds(int maxSize, double threshold) {
         LinkedList<ImmutableTriple<Integer, Integer, Integer>> sliceBoundaries = new LinkedList<>();
         for (int t = 1; t <= maxSize; t++) {
-            sliceBoundaries.add(new ImmutableTriple<>(t, lengthLowerBound(t, threshold), lengthUpperBound(t, threshold)));
+            sliceBoundaries
+                    .add(new ImmutableTriple<>(t, lengthLowerBound(t, threshold), lengthUpperBound(t, threshold)));
         }
         return sliceBoundaries;
     }
@@ -44,9 +45,9 @@ public class RatcliffObershelpMeasure extends StringMeasure implements TrieFilte
     /**
      * returns the score calculated by the algorithm
      *
-     * @param s1
-     * @param s2
-     * @return double
+     * @param s1 String
+     * @param s2 String
+     * @return double proximity
      */
     public double proximity(String s1, String s2) {
         score = 0;
@@ -63,8 +64,8 @@ public class RatcliffObershelpMeasure extends StringMeasure implements TrieFilte
      * processes the ratcliff/obershelp-algorithm recursivcely. this method is
      * faster than the iterative option (ca. 5-10%).
      *
-     * @param s1
-     * @param s2
+     * @param s1 String
+     * @param s2 String
      */
     private void processRatcliffAlgorithm(String s1, String s2) {
 
@@ -78,12 +79,10 @@ public class RatcliffObershelpMeasure extends StringMeasure implements TrieFilte
         String leftPartS1 = s1.substring(0, index1);
         String rightPartS2 = s2.substring(index2 + substring.length());
         String leftPartS2 = s2.substring(0, index2);
-        if (rightPartS1 != null && !rightPartS1.isEmpty()
-                && rightPartS2 != null && !rightPartS2.isEmpty()) {
+        if (rightPartS1 != null && !rightPartS1.isEmpty() && rightPartS2 != null && !rightPartS2.isEmpty()) {
             processRatcliffAlgorithm(rightPartS1, rightPartS2);
         }
-        if (leftPartS1 != null && !leftPartS1.isEmpty() && leftPartS2 != null
-                && !leftPartS2.isEmpty()) {
+        if (leftPartS1 != null && !leftPartS1.isEmpty() && leftPartS2 != null && !leftPartS2.isEmpty()) {
             processRatcliffAlgorithm(leftPartS1, leftPartS2);
         }
     }
@@ -91,9 +90,9 @@ public class RatcliffObershelpMeasure extends StringMeasure implements TrieFilte
     /**
      * finds the largest common group of two strings.
      *
-     * @param s
-     * @param t
-     * @return String
+     * @param s String
+     * @param t String
+     * @return longest commen string
      */
     private String findLongestSubstring(String s, String t) {
 
@@ -171,8 +170,8 @@ public class RatcliffObershelpMeasure extends StringMeasure implements TrieFilte
     }
 
     @Override
-    public double getSimilarity(Object a, Object b) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public double getSimilarity(Object object1, Object object2) {
+        return proximity(object1.toString(), object2.toString());
     }
 
     @Override
@@ -181,11 +180,11 @@ public class RatcliffObershelpMeasure extends StringMeasure implements TrieFilte
     }
 
     @Override
-    public double getSimilarity(Instance a, Instance b, String property1, String property2) {
+    public double getSimilarity(Instance instance1, Instance instance2, String property1, String property2) {
         double value = 0;
         double sim = 0;
-        for (String source : a.getProperty(property1)) {
-            for (String target : b.getProperty(property2)) {
+        for (String source : instance1.getProperty(property1)) {
+            for (String target : instance2.getProperty(property2)) {
                 sim = proximity(source, target);
                 if (sim > value) {
                     value = sim;
@@ -202,6 +201,6 @@ public class RatcliffObershelpMeasure extends StringMeasure implements TrieFilte
 
     @Override
     public double getRuntimeApproximation(double mappingSize) {
-        return -1d;
+        return mappingSize / 1000d;
     }
 }

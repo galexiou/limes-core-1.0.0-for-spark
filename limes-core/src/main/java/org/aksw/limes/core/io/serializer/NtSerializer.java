@@ -1,24 +1,30 @@
 package org.aksw.limes.core.io.serializer;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
-import java.io.*;
-import java.util.*;
+import java.util.Set;
+import java.util.TreeSet;
 
-import org.aksw.limes.core.io.mapping.Mapping;
-import org.apache.log4j.*;
+import org.aksw.limes.core.io.mapping.AMapping;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implements a simple serializer that generates NTriple files.
  *
- * @author ngonga
- * @author Mohamed Sherif <sherif@informatik.uni-leipzig.de>
+ * @author Axel-C. Ngonga Ngomo (ngonga@informatik.uni-leipzig.de)
+ * @author Mohamed Sherif (sherif@informatik.uni-leipzig.de)
  * @version Nov 25, 2015
  */
 public class NtSerializer implements ISerializer {
 
-	private static Logger logger = Logger.getLogger(NtSerializer.class.getName());
-	protected PrintWriter writer;
+    private static Logger logger = LoggerFactory.getLogger(NtSerializer.class.getName());
+    protected PrintWriter writer;
     protected Set<String> statements;
     protected Map<String, String> prefixMap;
     protected File folder = new File("");
@@ -31,49 +37,6 @@ public class NtSerializer implements ISerializer {
     public NtSerializer(HashMap<String, String> prefixes) {
         statements = new TreeSet<String>();
         prefixMap = prefixes;
-    }
-
-    public void addStatement(String subject, String predicate, String object, double similarity) {
-        statements.add("<" + subject + "> " + predicate + " <" + object + "> .");
-    }
-
-    public void flush() {
-        try {
-            for (String s : statements) {
-                writer.println(s);
-            }
-            statements = new TreeSet<String>();
-        } catch (Exception e) {
-            logger.warn("Error writing");
-        }
-    }
-
-    /**
-     * Gets a mapping and serializes it to a file in the N3 format. The method
-     * assume that the class already knows all the prefixes used in the uris and
-     * expands those.
-     *
-     * @param m Mapping to serialize
-     * @param predicate Predicate to use while serializing
-     * @param file File in which the mapping is to be serialized
-     */
-    public void writeToFile(Mapping m, String predicate, String file) {
-        open(file);
-        String predicatePrefix = getPrefix(predicate);
-
-        if (m.size() > 0) {
-            //first get the prefix used in the subjects
-//            String source = m.getMap().keySet().iterator().next();
-//            String target = m.getMap().get(source).keySet().iterator().next();
-            for (String s : m.getMap().keySet()) {
-                for (String t : m.getMap().get(s).keySet()) {
-                    writer.println("<" + s + "> "
-                            + "<" + expand(predicate, predicatePrefix) + "> "
-                            + "<" + t + "> .");
-                }
-            }
-        }
-        close();
     }
 
     /**
@@ -92,14 +55,52 @@ public class NtSerializer implements ISerializer {
         }
     }
 
+    public void addStatement(String subject, String predicate, String object, double similarity) {
+        statements.add("<" + subject + "> <" + predicate + "> <" + object + "> .");
+    }
+
+    public void flush() {
+        try {
+            for (String s : statements) {
+                writer.println(s);
+            }
+            statements = new TreeSet<String>();
+        } catch (Exception e) {
+            logger.warn("Error writing");
+        }
+    }
+
+    /**
+     * Gets a mapping and serializes it to a file in the N3 format. The method
+     * assume that the class already knows all the prefixes used in the uris and
+     * expands those.
+     *
+     * @param mapping Mapping to serialize
+     * @param predicate Predicate to use while serializing
+     * @param file File in which the mapping is to be serialized
+     */
+    public void writeToFile(AMapping mapping, String predicate, String file) {
+        open(file);
+        String predicatePrefix = getPrefix(predicate);
+
+        if (mapping.size() > 0) {
+            for (String s : mapping.getMap().keySet()) {
+                for (String t : mapping.getMap().get(s).keySet()) {
+                    writer.println("<" + s + "> "
+                            + "<" + expand(predicate, predicatePrefix) + "> "
+                            + "<" + t + "> .");
+                }
+            }
+        }
+        close();
+    }
+
     /**
      * Writes in the file statement by statement. Rather slow, not to be used
      *
-     * @param subject Source object of a mapping, subject of the triple to be
-     * written
+     * @param subject Source object of a mapping, subject of the triple to be written
      * @param predicate Predicate to be written
-     * @param object Target object of a mapping, object of the triple to be
-     * written
+     * @param object Target object of a mapping, object of the triple to be written
      * @param similarity Similarity achieved by the subject and object
      */
     public void printStatement(String subject, String predicate, String object, double similarity) {
@@ -116,8 +117,8 @@ public class NtSerializer implements ISerializer {
     /**
      * Method to print prefixes: "@prefix key: url ."
      *
-     * @param prefixMap
-     * @param file
+     * @param prefixMap to be printed
+     * @param file file name
      */
     public void printPrefixes(Map<String, String> prefixMap, String file) {
         open(file);
@@ -156,7 +157,7 @@ public class NtSerializer implements ISerializer {
         try {
             // if no parent folder is given, then take that of the config that was set by the controller
             if (!file.contains("/") && !file.contains("\\")) {
-                String filePath = folder.getAbsolutePath()+File.separatorChar+file;
+                String filePath = folder.getAbsolutePath() + File.separatorChar + file;
                 writer = new PrintWriter(new BufferedWriter(new FileWriter(filePath)));
             } else {
                 writer = new PrintWriter(new BufferedWriter(new FileWriter(file)));

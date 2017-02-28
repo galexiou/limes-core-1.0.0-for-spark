@@ -1,55 +1,62 @@
 package org.aksw.limes.core.execution.engine;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.aksw.limes.core.io.cache.Cache;
-import org.aksw.limes.core.io.mapping.MemoryMapping;
-import org.apache.log4j.Logger;
+import org.aksw.limes.core.io.cache.ACache;
+import org.aksw.limes.core.io.mapping.AMapping;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Implements the execution engine abstract class. The idea is that the engine
- * gets a series of instructions in the form of an execution plan and runs these
- * instructions and returns a mapping
+ * Implements the execution engine abstract class. The engine gets as input a
+ * link specification and a planner type, executes the plan returned from the
+ * planner and returns the set of links as a mapping.
  *
- * @author ngonga
- * @author kleanthi
+ * @author Axel-C. Ngonga Ngomo (ngonga@informatik.uni-leipzig.de)
+ * @author Kleanthi Georgala (georgala@informatik.uni-leipzig.de)
+ * @version 1.0
  */
-public abstract class ExecutionEngine implements IExecutionEngine, Serializable {
+public abstract class ExecutionEngine implements IExecutionEngine {
+    static Logger logger = LoggerFactory.getLogger(ExecutionEngine.class);
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	static Logger logger = Logger.getLogger("LIMES");
-    // contains the results
-    protected List<MemoryMapping> buffer;
+     * List of intermediate mappings.
+     */
+    protected List<AMapping> buffer;
+    /**
+     * Source variable (usually "?x").
+     */
     protected String sourceVariable;
+    /**
+     * Target variable (usually "?y").
+     */
     protected String targetVariable;
-    protected Cache source;
-    protected Cache target;
+    /**
+     * Source cache.
+     */
+    protected ACache source;
+    /**
+     * Target cache.
+     */
+    protected ACache target;
 
     /**
      * Constructor for an execution engine.
      *
-     * @param source,
+     * @param source
      *            Source cache
-     * @param target,
+     * @param target
      *            Target cache
-     * @param sourceVar,
-     *            Source variable (usually "?x")
-     * @param targetVar,
-     *            Target variable (usually "?y")
+     * @param sourceVar
+     *            Source variable
+     * @param targetVar
+     *            Target variable
      */
-    public ExecutionEngine(Cache source, Cache target, String sourceVar, String targetVar) {
-	this.buffer = new ArrayList<MemoryMapping>();
-	this.source = source;
-	this.target = target;
-	this.sourceVariable = sourceVar;
-	this.targetVariable = targetVar;
-    }
-    
-    public ExecutionEngine(){
-    	
+    public ExecutionEngine(ACache source, ACache target, String sourceVar, String targetVar) {
+        this.buffer = new ArrayList<>();
+        this.source = source;
+        this.target = target;
+        this.sourceVariable = sourceVar;
+        this.targetVariable = targetVar;
     }
 }

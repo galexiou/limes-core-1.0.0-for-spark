@@ -1,50 +1,40 @@
 package org.aksw.limes.core.io.mapping.reader;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-
-import org.aksw.limes.core.io.mapping.Mapping;
-import org.aksw.limes.core.io.mapping.MemoryMapping;
+import org.aksw.limes.core.io.config.reader.rdf.RDFConfigurationReader;
+import org.aksw.limes.core.io.mapping.AMapping;
+import org.aksw.limes.core.io.mapping.MappingFactory;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
 
 /**
- * @author Mohamed Sherif <sherif@informatik.uni-leipzig.de>
- * @version Nov 12, 2015
+ * @author Mohamed Sherif (sherif@informatik.uni-leipzig.de)
+ * @version Jul 12, 2016
  */
-public class RDFMappingReader implements IMappingReader{
+public class RDFMappingReader extends AMappingReader {
 
-
-	@Override
-	public Mapping read(String file) {
-		if(file.endsWith(".nt") || file.endsWith(".n3")){
-			return readNtFile(file);
-		}
-		return null;
-	}
-	
     /**
-     * Reads mapping from nt file
+     * @param file  input file for reading
+     */
+    public RDFMappingReader(String file){
+        super(file);
+    }
+    /**
+     * Reads mapping from RDF file (NT, N3, TTL, JASON-LD)
      *
-     * @param file Input file for reading
      * @return Mapping that represents the content of the file
      */
-    public static Mapping readNtFile(String file) {
-        Mapping m = new MemoryMapping();
-        try {
-        	file = System.getProperty("user.dir") + "/" + file;
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            String s = reader.readLine();
-            String split[];
-            while (s != null) {
-                //split first line
-                split = s.split(" ");
-                m.add(split[0].substring(1, split[0].length() - 1), split[2].substring(1, split[2].length() - 1), 1.0);
-                s = reader.readLine();
-            }
-            reader.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+    @Override
+    public AMapping read() {
+        AMapping mapping = MappingFactory.createDefaultMapping();
+        Model mappingModel = RDFConfigurationReader.readModel(file);
+        StmtIterator iter = mappingModel.listStatements();
+        while (iter.hasNext()){
+            Statement stmt = iter.nextStatement();
+            mapping.add(stmt.getSubject().toString(),stmt.getObject().toString(),1d);
+            mapping.setPredicate(stmt.getPredicate().toString());
         }
-        return m;
+        return mapping;
     }
 
 }

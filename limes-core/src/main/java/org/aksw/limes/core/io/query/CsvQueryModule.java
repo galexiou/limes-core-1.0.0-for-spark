@@ -1,29 +1,30 @@
 package org.aksw.limes.core.io.query;
 
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
-import org.aksw.limes.core.io.cache.Cache;
+import org.aksw.limes.core.io.cache.ACache;
 import org.aksw.limes.core.io.config.KBInfo;
 import org.aksw.limes.core.io.preprocessing.Preprocessor;
 import org.aksw.limes.core.util.DataCleaner;
-import org.apache.log4j.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MarkerFactory;
 
 
 /**
- *
- * @author ngonga
- * @author Mohamed Sherif <sherif@informatik.uni-leipzig.de>
+ * @author Axel-C. Ngonga Ngomo (ngonga@informatik.uni-leipzig.de)
+ * @author Mohamed Sherif (sherif@informatik.uni-leipzig.de)
  * @version Nov 23, 2015
  */
 public class CsvQueryModule implements IQueryModule {
-	Logger logger = Logger.getLogger(CsvQueryModule.class.getName());
-
-    private String SEP = ",";
+    Logger logger = LoggerFactory.getLogger(CsvQueryModule.class.getName());
     KBInfo kb;
+    private String SEP = ",";
 
     public CsvQueryModule(KBInfo kbinfo) {
         kb = kbinfo;
@@ -37,9 +38,10 @@ public class CsvQueryModule implements IQueryModule {
      * Read a CSV file and write the content in a cache. The first line is the
      * name of the properties.
      *
-     * @param c Cache in which the content is to be written
+     * @param c
+     *         Cache in which the content is to be written
      */
-    public void fillCache(Cache c) {
+    public void fillCache(ACache c) {
         try {
             // in case a CSV is use, endpoint is the file to read
             BufferedReader reader = new BufferedReader(new FileReader(kb.getEndpoint()));
@@ -59,7 +61,7 @@ public class CsvQueryModule implements IQueryModule {
                     //split = s.split(SEP);
 
                     split = DataCleaner.separate(s, SEP, properties.size());
-                  
+
                     id = split[0];
                     for (String propertyLabel : kb.getProperties()) {
 //                    	System.out.println("Trying to access property "+propertyLabel+" at position "+properties.indexOf(propertyLabel));
@@ -81,7 +83,7 @@ public class CsvQueryModule implements IQueryModule {
             reader.close();
             logger.info("Retrieved " + c.size() + " statements");
         } catch (Exception e) {
-            logger.fatal("Exception:" + e.getMessage());
+            logger.error(MarkerFactory.getMarker("FATAL"),"Exception:" + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -90,10 +92,11 @@ public class CsvQueryModule implements IQueryModule {
      * Read a CSV file and write the content in a cache. The first line is the
      * name of the properties.
      *
-     * @param c Cache in which the content is to be written
+     * @param c
+     *         Cache in which the content is to be written
      */
-    public void fillAllInCache(Cache c) {
-        Logger logger = Logger.getLogger("LIMES");
+    public void fillAllInCache(ACache c) {
+        Logger logger = LoggerFactory.getLogger("LIMES");
         String s = "";
         try {
             // in case a CSV is use, endpoint is the file to read
@@ -117,7 +120,7 @@ public class CsvQueryModule implements IQueryModule {
                 while (s != null) {
                     split = s.split(SEP);
                     split = DataCleaner.separate(s, SEP, properties.size());
-                    id = split[0].substring(1, split[0].length()-1);
+                    id = split[0].substring(1, split[0].length() - 1);
                     //logger.info(id);
                     for (String propertyLabel : kb.getProperties()) {
                         rawValue = split[properties.indexOf(propertyLabel)];
@@ -142,10 +145,10 @@ public class CsvQueryModule implements IQueryModule {
             reader.close();
             logger.info("Retrieved " + c.size() + " statements");
         } catch (Exception e) {
-            logger.fatal("Exception:" + e.getMessage());
+            logger.error(MarkerFactory.getMarker("FATAL"),"Exception:" + e.getMessage());
             logger.warn(s);
             e.printStackTrace();
         }
     }
-    
+
 }

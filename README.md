@@ -1,13 +1,32 @@
-# limes-core-1.0.0-for-spark
+# LIMES-dev
 
-org.aksw.limes.core.io.config.reader.xml.XMLConfigurationReader -> validateAndRead(InputStream input,final InputStream dtd)
+[![Build Status](https://travis-ci.org/AKSW/LIMES-dev.svg?branch=dev)](https://travis-ci.org/AKSW/LIMES-dev)
 
-org.aksw.limes.core.io.cache.Instance implements Serializable
-org.aksw.limes.core.io.cache.Instance 29 : Map -> HashMap
+Development branch for LIMES - Link Discovery Framework for Metric Spaces.
 
-org.aksw.limes.core.io.cache.MemoryCache implements Serializable
-org.aksw.limes.core.io.cache.MemoryCache 52 custom constructor
+## Generating Jar File
+installing use:
+```
+mvn clean install
+```
 
-org.aksw.limes.core.execution.engine.SimpleExecutionEngine 56 custom constructor
+Creating the runnable jar file including the dependencies use:
+```
+mvn clean package shade:shade
+```
 
-org.aksw.limes.core.execution.engine.SimpleExecutionEngine 61 function configure
+### Importing into Eclipse
+In case Eclipse does not recognize the project as Java. Please run the following from the `limes-core/` directory:
+```
+mvn eclipse:eclipse
+```
+Then, update the project on Eclipse.
+
+## Binaries
+Current releases can be found at https://github.com/AKSW/LIMES.
+
+## More details
+
+* [Project web site](http://aksw.org/Projects/LIMES)
+* [User manual](http://aksw.github.io/LIMES-dev/user_manual/)
+* [Developer manual](http://aksw.github.io/LIMES-dev/developer_manual/)
